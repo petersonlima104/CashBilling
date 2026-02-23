@@ -1,0 +1,245 @@
+body {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* =========================
+   NAVBAR
+   ========================= */
+
+.navbar {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.navbar-brand {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* =========================
+   CARDS
+   ========================= */
+
+.card {
+  border: none;
+  border-radius: 16px;
+  transition: all 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   BUTTONS
+   ========================= */
+
+.btn {
+  border-radius: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary {
+  background: #0d6efd;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #0b5ed7;
+  transform: scale(1.02);
+}
+
+.btn-success {
+  background: #198754;
+  border: none;
+}
+
+.btn-success:hover {
+  background: #157347;
+  transform: scale(1.02);
+}
+
+.btn-danger {
+  background: #dc3545;
+  border: none;
+}
+
+.btn-danger:hover {
+  background: #bb2d3b;
+  transform: scale(1.02);
+}
+
+.btn-warning {
+  background: #ffc107;
+  border: none;
+}
+
+.btn-warning:hover {
+  background: #e0a800;
+  transform: scale(1.02);
+}
+
+.btn-secondary:hover {
+  transform: scale(1.02);
+}
+
+/* =========================
+   FORM CONTROLS
+   ========================= */
+
+.form-control,
+.form-select {
+  border-radius: 12px;
+  border: 1px solid #dee2e6;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+  border-color: #0d6efd;
+}
+
+/* =========================
+   CLIENT TOTAL
+   ========================= */
+
+#totalDebt {
+  font-size: 1.4rem;
+  color: #dc3545;
+}
+
+/* =========================
+   LISTA DE PRODUTOS
+   ========================= */
+
+#purchaseList div {
+  border-radius: 10px;
+  padding: 8px;
+  transition: background 0.2s ease;
+}
+
+#purchaseList div:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* =========================
+   LOGIN CARD
+   ========================= */
+
+body.bg-dark {
+  background: linear-gradient(135deg, #212529, #343a40);
+}
+
+body.bg-dark .card {
+  border-radius: 20px;
+}
+
+body.bg-dark h3 {
+  font-weight: 600;
+}
+
+/* =========================
+   RESPONSIVO
+   ========================= */
+
+@media (max-width: 768px) {
+  .card {
+    border-radius: 12px;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+  }
+}
+
+/* =========================
+   SCROLL SUAVE
+   ========================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* =========================
+   TRANSIÇÕES GERAIS
+   ========================= */
+
+* {
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+/* =========================
+   ANIMAÇÕES SUAVES
+   ========================= */
+
+/* Fade-in geral ao carregar */
+.fade-in {
+  opacity: 0;
+  transform: translateY(15px);
+  animation: fadeInUp 0.5s forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Botão - hover já tem scale, vamos suavizar */
+.btn {
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Cards com transição ao adicionar/remover */
+.card,
+#purchaseList div {
+  transition: all 0.25s ease;
+}
+
+/* Feedback visual de sucesso ao salvar */
+.flash-success {
+  animation: flashGreen 0.8s forwards;
+}
+
+@keyframes flashGreen {
+  0% {
+    background-color: #d1e7dd;
+  }
+  50% {
+    background-color: #19875420;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Feedback visual de erro */
+.flash-error {
+  animation: flashRed 0.8s forwards;
+}
+
+@keyframes flashRed {
+  0% {
+    background-color: #f8d7da;
+  }
+  50% {
+    background-color: #dc354520;
+  }
+  100% {
+    background-color: transparent;
+  }
+}

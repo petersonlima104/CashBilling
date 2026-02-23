@@ -50,21 +50,19 @@ function calculateTotal() {
 }
 
 // 🔥 RENDERIZAR COM BOTÃO DE EXCLUIR
+// renderPurchases atualizado
 function renderPurchases() {
   purchaseList.innerHTML = "";
 
   clientData.purchases.forEach((item, index) => {
-    purchaseList.innerHTML += `
-      <div class="d-flex justify-content-between align-items-center border-bottom py-2">
-        <div>
-          ${item.name} - R$ ${item.price.toFixed(2)}
-        </div>
-        <button class="btn btn-sm btn-danger"
-          onclick="removePurchase(${index})">
-          X
-        </button>
-      </div>
+    const div = document.createElement("div");
+    div.className =
+      "d-flex justify-content-between align-items-center border-bottom py-2 fade-in";
+    div.innerHTML = `
+      <div>${item.name} - R$ ${item.price.toFixed(2)}</div>
+      <button class="btn btn-sm btn-danger" onclick="removePurchase(${index})">X</button>
     `;
+    purchaseList.appendChild(div);
   });
 
   totalDebtEl.innerText = "R$ " + calculateTotal().toFixed(2);
@@ -90,13 +88,22 @@ window.removePurchase = (index) => {
 
 // 🔥 SALVAR TUDO
 document.getElementById("saveClientBtn").onclick = async () => {
-  clientData.observations = observationInput.value;
-  clientData.totalDebt = calculateTotal();
-  clientData.updatedAt = Date.now();
+  try {
+    clientData.observations = observationInput.value;
+    clientData.totalDebt = calculateTotal();
+    clientData.updatedAt = Date.now();
 
-  await updateDoc(doc(db, "clients", clientId), clientData);
+    await updateDoc(doc(db, "clients", clientId), clientData);
 
-  alert("Dados salvos com sucesso!");
+    // animação de sucesso
+    const card = document.querySelector(".container");
+    card.classList.add("flash-success");
+    setTimeout(() => card.classList.remove("flash-success"), 800);
+  } catch (err) {
+    const card = document.querySelector(".container");
+    card.classList.add("flash-error");
+    setTimeout(() => card.classList.remove("flash-error"), 800);
+  }
 };
 
 loadProducts();
