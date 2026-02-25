@@ -95,14 +95,18 @@ document.getElementById("saveClientBtn").onclick = async () => {
 
     await updateDoc(doc(db, "clients", clientId), clientData);
 
-    // animação de sucesso
-    const card = document.querySelector(".container");
-    card.classList.add("flash-success");
-    setTimeout(() => card.classList.remove("flash-success"), 800);
+    // 🔥 Pequeno feedback visual opcional
+    const btn = document.getElementById("saveClientBtn");
+    btn.innerText = "Salvo ✔";
+    btn.disabled = true;
+
+    // 🔥 Aguarda 500ms para mostrar feedback
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 500);
   } catch (err) {
-    const card = document.querySelector(".container");
-    card.classList.add("flash-error");
-    setTimeout(() => card.classList.remove("flash-error"), 800);
+    alert("Erro ao salvar.");
+    console.error(err);
   }
 };
 

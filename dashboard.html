@@ -21,9 +21,17 @@
     </nav>
 
     <div class="container mt-4">
-      <button class="btn btn-success mb-3" id="newClientBtn">
-        Novo Cliente
-      </button>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <button class="btn btn-success" id="newClientBtn">Novo Cliente</button>
+
+        <input
+          type="text"
+          id="searchClient"
+          class="form-control w-50"
+          placeholder="🔎 Pesquisar cliente pelo nome..."
+        />
+      </div>
+
       <div id="clientsList" class="row g-3"></div>
     </div>
 

@@ -6,6 +6,8 @@ import {
   deleteDoc,
   doc,
   updateDoc,
+  query,
+  orderBy,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const productsList = document.getElementById("productsList");
@@ -15,14 +17,17 @@ const editProductId = document.getElementById("editProductId");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
 
 async function loadProducts() {
-  const snapshot = await getDocs(collection(db, "products"));
+  const q = query(collection(db, "products"), orderBy("name", "asc"));
+
+  const snapshot = await getDocs(q);
+
   productsList.innerHTML = "";
 
   snapshot.forEach((docSnap) => {
     const data = docSnap.data();
 
     productsList.innerHTML += `
-      <div class="card p-2 mb-2 shadow-sm d-flex justify-content-between align-items-center">
+      <div class="card p-2 mb-2 shadow-sm d-flex justify-content-between align-items-center fade-in">
         <div>
           <strong>${data.name}</strong>
           <div>R$ ${data.price.toFixed(2)}</div>
