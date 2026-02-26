@@ -64,15 +64,26 @@ function renderClients(clients) {
   };
 
   clients.forEach((client) => {
-    const clientDate = new Date(client.updatedAt);
-    const oneDay = 1000 * 60 * 60 * 24;
-    const diffDays = Math.floor((now - clientDate) / oneDay);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    if (diffDays === 0) sections.hoje.push(client);
-    else if (diffDays === 1) sections.ontem.push(client);
-    else if (diffDays <= 7) sections.semana.push(client);
-    else if (diffDays <= 30) sections.mes.push(client);
-    else sections.antigos.push(client);
+    const clientDay = new Date(client.updatedAt);
+    clientDay.setHours(0, 0, 0, 0);
+
+    const diffTime = today - clientDay;
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+    if (diffDays === 0) {
+      sections.hoje.push(client);
+    } else if (diffDays === 1) {
+      sections.ontem.push(client);
+    } else if (diffDays <= 7) {
+      sections.semana.push(client);
+    } else if (diffDays <= 30) {
+      sections.mes.push(client);
+    } else {
+      sections.antigos.push(client);
+    }
   });
 
   function renderSection(title, data) {
