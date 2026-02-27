@@ -8,6 +8,8 @@ import {
   getDocs,
   increment,
   serverTimestamp,
+  query,
+  orderBy,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 //  Calcula e atualiza receita mensal no Firestore
@@ -49,7 +51,9 @@ const partialPaymentInput = document.getElementById("partialPayment");
 
 // 🔥 CARREGAR PRODUTOS
 async function loadProducts() {
-  const snapshot = await getDocs(collection(db, "products"));
+  const q = query(collection(db, "products"), orderBy("name", "asc"));
+
+  const snapshot = await getDocs(q);
   productSelect.innerHTML = "";
 
   snapshot.forEach((docSnap) => {
