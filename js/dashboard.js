@@ -67,7 +67,7 @@ function renderClients(clients) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const clientDay = new Date(client.updatedAt);
+    const clientDay = new Date(client.updatedAt || Date.now());
     clientDay.setHours(0, 0, 0, 0);
 
     const diffTime = today - clientDay;
@@ -104,7 +104,7 @@ function renderClients(clients) {
             <h5>${client.name}</h5>
             <p>Atualizado: ${clientDate.toLocaleDateString()}</p>
             <h6 class="text-danger">
-              R$ ${client.totalDebt?.toFixed(2) || "0.00"}
+              R$ ${(client.totalDebt || 0).toFixed(2)}
             </h6>
             <div class="d-flex gap-2 mt-2">
               <a href="client.html?id=${client.id}"
