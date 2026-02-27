@@ -16,6 +16,7 @@ const productSelect = document.getElementById("productSelect");
 const purchaseList = document.getElementById("purchaseList");
 const totalDebtEl = document.getElementById("totalDebt");
 const observationInput = document.getElementById("observation");
+const partialPaymentInput = document.getElementById("partialPayment");
 
 // 🔥 CARREGAR PRODUTOS
 async function loadProducts() {
@@ -143,9 +144,50 @@ document.getElementById("addPurchaseBtn").onclick = () => {
   renderPurchases();
 };
 
-// 🔥 REMOVER PRODUTO
+//  REMOVER PRODUTO
 window.removeProduct = (index) => {
   clientData.purchases.splice(index, 1);
+  renderPurchases();
+};
+
+//  Adicionar pagamento parcial
+document.getElementById("addPaymentBtn").onclick = () => {
+  const paymentValue = parseFloat(partialPaymentInput.value);
+
+  if (!paymentValue || paymentValue <= 0) {
+    alert("Digite um valor válido.");
+    return;
+  }
+
+  const currentTotal = calculateTotal(); // Total antes do pagamento
+
+  if (paymentValue > currentTotal) {
+    alert("O valor pago não pode ser maior que o total devido.");
+    return;
+  }
+
+  // 🔥 Adiciona pagamento como item negativo
+  clientData.purchases.push({
+    id: "payment_" + Date.now(),
+    name: "Pagamento Parcial",
+    price: -paymentValue,
+    quantity: 1,
+  });
+
+  // 🔥 Data formatada
+  const now = new Date();
+  const dateFormatted =
+    now.toLocaleDateString() + " " + now.toLocaleTimeString();
+
+  // 🔥 NOVA OBSERVAÇÃO MELHORADA
+  const newObservation = `\n[${dateFormatted}] Pagamento parcial registrado no valor de: R$ ${paymentValue.toFixed(2)} do Total de: R$ ${currentTotal.toFixed(2)}`;
+
+  clientData.observations = (clientData.observations || "") + newObservation;
+
+  observationInput.value = clientData.observations;
+
+  partialPaymentInput.value = "";
+
   renderPurchases();
 };
 
