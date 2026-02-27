@@ -24,8 +24,12 @@ async function loadProducts() {
 
   snapshot.forEach((docSnap) => {
     const data = docSnap.data();
+
     productSelect.innerHTML += `
-      <option value="${data.price}" data-name="${data.name}">
+      <option 
+        value="${docSnap.id}" 
+        data-name="${data.name}"
+        data-price="${data.price}">
         ${data.name} - R$ ${data.price.toFixed(2)}
       </option>
     `;
@@ -46,7 +50,10 @@ async function loadClient() {
 
 // 🔥 CALCULAR TOTAL
 function calculateTotal() {
-  return clientData.purchases.reduce((sum, item) => sum + item.price, 0);
+  return clientData.purchases.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
 }
 
 // 🔥 RENDERIZAR COM BOTÃO DE EXCLUIR
@@ -54,34 +61,90 @@ function calculateTotal() {
 function renderPurchases() {
   purchaseList.innerHTML = "";
 
+  let total = 0;
+
   clientData.purchases.forEach((item, index) => {
-    const div = document.createElement("div");
-    div.className =
-      "d-flex justify-content-between align-items-center border-bottom py-2 fade-in";
-    div.innerHTML = `
-      <div>${item.name} - R$ ${item.price.toFixed(2)}</div>
-      <button class="btn btn-sm btn-danger" onclick="removePurchase(${index})">X</button>
+    const subtotal = item.price * item.quantity;
+    total += subtotal;
+
+    purchaseList.innerHTML += `
+      <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+        <div>
+          <strong>${item.name}</strong><br>
+          <small>
+            R$ ${item.price.toFixed(2)} x ${item.quantity}
+          </small>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+
+          <button onclick="changeQuantity(${index}, -1)"
+                  class="btn btn-sm btn-outline-secondary">
+            -
+          </button>
+
+          <span>${item.quantity}</span>
+
+          <button onclick="changeQuantity(${index}, 1)"
+                  class="btn btn-sm btn-outline-secondary">
+            +
+          </button>
+
+          <button onclick="removeProduct(${index})"
+                  class="btn btn-sm btn-danger">
+            ✕
+          </button>
+
+        </div>
+      </div>
     `;
-    purchaseList.appendChild(div);
   });
 
-  totalDebtEl.innerText = "R$ " + calculateTotal().toFixed(2);
+  totalDebt.innerText = `R$ ${total.toFixed(2)}`;
 }
+
+//Alterar quantidade
+window.changeQuantity = (index, change) => {
+  clientData.purchases[index].quantity += change;
+
+  if (clientData.purchases[index].quantity <= 0) {
+    clientData.purchases.splice(index, 1);
+  }
+
+  renderPurchases();
+};
 
 // 🔥 ADICIONAR PRODUTO
 document.getElementById("addPurchaseBtn").onclick = () => {
-  const selected = productSelect.options[productSelect.selectedIndex];
+  const selectedOption = productSelect.options[productSelect.selectedIndex];
 
-  const name = selected.dataset.name;
-  const price = parseFloat(selected.value);
+  const productId = selectedOption.value;
+  const productName = selectedOption.dataset.name;
+  const productPrice = parseFloat(selectedOption.dataset.price);
 
-  clientData.purchases.push({ name, price });
+  // 🔎 Verifica se produto já existe
+  const existingProduct = clientData.purchases.find(
+    (item) => item.id === productId,
+  );
+
+  if (existingProduct) {
+    // 🔥 Apenas aumenta quantidade
+    existingProduct.quantity += 1;
+  } else {
+    // 🔥 Cria novo produto com quantidade 1
+    clientData.purchases.push({
+      id: productId,
+      name: productName,
+      price: productPrice,
+      quantity: 1,
+    });
+  }
 
   renderPurchases();
 };
 
 // 🔥 REMOVER PRODUTO
-window.removePurchase = (index) => {
+window.removeProduct = (index) => {
   clientData.purchases.splice(index, 1);
   renderPurchases();
 };
