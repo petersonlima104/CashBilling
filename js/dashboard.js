@@ -43,9 +43,7 @@ async function loadClients() {
    🔥 RENDERIZAR CLIENTES
 ================================ */
 function renderClients(clients) {
-  clientsList.innerHTML = "";
-
-  if (clients.length === 0) {
+  if (!clients || clients.length === 0) {
     clientsList.innerHTML = `
       <div class="text-center mt-4">
         <p class="text-muted">Nenhum cliente encontrado.</p>
@@ -54,7 +52,8 @@ function renderClients(clients) {
     return;
   }
 
-  const now = new Date();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const sections = {
     hoje: [],
@@ -65,32 +64,24 @@ function renderClients(clients) {
   };
 
   clients.forEach((client) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
     const clientDay = new Date(client.updatedAt || Date.now());
     clientDay.setHours(0, 0, 0, 0);
 
-    const diffTime = today - clientDay;
-    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    const diffDays = (today - clientDay) / (1000 * 60 * 60 * 24);
 
-    if (diffDays === 0) {
-      sections.hoje.push(client);
-    } else if (diffDays === 1) {
-      sections.ontem.push(client);
-    } else if (diffDays <= 7) {
-      sections.semana.push(client);
-    } else if (diffDays <= 30) {
-      sections.mes.push(client);
-    } else {
-      sections.antigos.push(client);
-    }
+    if (diffDays === 0) sections.hoje.push(client);
+    else if (diffDays === 1) sections.ontem.push(client);
+    else if (diffDays <= 7) sections.semana.push(client);
+    else if (diffDays <= 30) sections.mes.push(client);
+    else sections.antigos.push(client);
   });
+
+  let html = "";
 
   function renderSection(title, data) {
     if (data.length === 0) return;
 
-    clientsList.innerHTML += `
+    html += `
       <div class="col-12 mt-4">
         <h5 class="border-bottom pb-2">${title}</h5>
       </div>
@@ -99,7 +90,7 @@ function renderClients(clients) {
     data.forEach((client) => {
       const clientDate = new Date(client.updatedAt);
 
-      clientsList.innerHTML += `
+      html += `
         <div class="col-md-4 fade-in">
           <div class="card shadow p-3 h-100">
             <h5>${client.name}</h5>
@@ -128,6 +119,8 @@ function renderClients(clients) {
   renderSection("🔵 Esta Semana", sections.semana);
   renderSection("🟣 Este Mês", sections.mes);
   renderSection("⚫ Antigos", sections.antigos);
+
+  clientsList.innerHTML = html;
 }
 
 /* ================================
