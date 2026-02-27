@@ -2,10 +2,39 @@ import { db } from "./firebase-config.js";
 import {
   doc,
   getDoc,
+  setDoc,
   updateDoc,
   collection,
   getDocs,
+  increment,
+  serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+//  Calcula e atualiza receita mensal no Firestore
+async function updateMonthlyRevenueFirestore(amountToAdd) {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const monthKey = `${year}-${month}`;
+
+  const monthRef = doc(db, "monthlyRevenue", monthKey);
+
+  const monthSnap = await getDoc(monthRef);
+
+  if (monthSnap.exists()) {
+    await updateDoc(monthRef, {
+      total: increment(amountToAdd),
+      updatedAt: serverTimestamp(),
+    });
+  } else {
+    await setDoc(monthRef, {
+      total: amountToAdd,
+      month,
+      year: String(year),
+      createdAt: serverTimestamp(),
+    });
+  }
+}
 
 const params = new URLSearchParams(window.location.search);
 const clientId = params.get("id");
@@ -194,18 +223,38 @@ document.getElementById("addPaymentBtn").onclick = () => {
 // 🔥 SALVAR TUDO
 document.getElementById("saveClientBtn").onclick = async () => {
   try {
+    const clientRef = doc(db, "clients", clientId);
+
+    // Buscar dados atuais do banco (antes da edição)
+    const oldSnap = await getDoc(clientRef);
+
+    let oldTotalDebt = 0;
+
+    if (oldSnap.exists()) {
+      oldTotalDebt = oldSnap.data().totalDebt || 0;
+    }
+
+    // Atualizar dados locais
     clientData.observations = observationInput.value;
-    clientData.totalDebt = calculateTotal();
+    const newTotalDebt = calculateTotal();
+    clientData.totalDebt = newTotalDebt;
     clientData.updatedAt = Date.now();
 
-    await updateDoc(doc(db, "clients", clientId), clientData);
+    // Salvar cliente
+    await updateDoc(clientRef, clientData);
 
-    // 🔥 Pequeno feedback visual opcional
+    // Calcular diferença positiva
+    const difference = newTotalDebt - oldTotalDebt;
+
+    if (difference > 0) {
+      await updateMonthlyRevenueFirestore(difference);
+    }
+
+    // Feedback visual
     const btn = document.getElementById("saveClientBtn");
     btn.innerText = "Salvo ✔";
     btn.disabled = true;
 
-    // 🔥 Aguarda 500ms para mostrar feedback
     setTimeout(() => {
       window.location.href = "dashboard.html";
     }, 500);

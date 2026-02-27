@@ -7,6 +7,7 @@ import {
   doc,
   query,
   orderBy,
+  getDoc,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 import { signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -182,4 +183,39 @@ document.getElementById("logoutBtn").onclick = () => {
 /* ================================
    🚀 INICIAR
 ================================ */
+
+/* ================================
+   💰 FATURAMENTO MENSAL
+================================ */
+async function renderMonthlyRevenue() {
+  const container = document.getElementById("monthlyRevenueContainer");
+  if (!container) return;
+
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const monthKey = `${now.getFullYear()}-${month}`;
+
+  const revenueRef = doc(db, "monthlyRevenue", monthKey);
+  const revenueSnap = await getDoc(revenueRef);
+
+  if (!revenueSnap.exists()) {
+    container.innerHTML = "";
+    return;
+  }
+
+  const data = revenueSnap.data();
+
+  const monthName = now.toLocaleDateString("pt-BR", {
+    month: "long",
+  });
+
+  container.innerHTML = `
+    <div class="card shadow p-3 mt-4 text-center bg-success text-white">
+      <h5>Faturamento de ${monthName.charAt(0).toUpperCase() + monthName.slice(1)}</h5>
+      <h3>Total R$ ${(data.total || 0).toFixed(2)}</h3>
+    </div>
+  `;
+}
+
 loadClients();
+renderMonthlyRevenue();
