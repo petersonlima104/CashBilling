@@ -52,28 +52,44 @@ function renderClients(clients) {
     return;
   }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
   const sections = {
     hoje: [],
     ontem: [],
     semana: [],
+    semanaPassada: [],
     mes: [],
     antigos: [],
   };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - today.getDay() + 1); // segunda
+
+  const startOfLastWeek = new Date(startOfWeek);
+  startOfLastWeek.setDate(startOfWeek.getDate() - 7);
 
   clients.forEach((client) => {
     const clientDay = new Date(client.updatedAt || Date.now());
     clientDay.setHours(0, 0, 0, 0);
 
-    const diffDays = (today - clientDay) / (1000 * 60 * 60 * 24);
+    const diffTime = today - clientDay;
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
-    if (diffDays === 0) sections.hoje.push(client);
-    else if (diffDays === 1) sections.ontem.push(client);
-    else if (diffDays <= 7) sections.semana.push(client);
-    else if (diffDays <= 30) sections.mes.push(client);
-    else sections.antigos.push(client);
+    if (diffDays === 0) {
+      sections.hoje.push(client);
+    } else if (diffDays === 1) {
+      sections.ontem.push(client);
+    } else if (clientDay >= startOfWeek) {
+      sections.semana.push(client);
+    } else if (clientDay >= startOfLastWeek && clientDay < startOfWeek) {
+      sections.semanaPassada.push(client);
+    } else if (clientDay.getMonth() === today.getMonth()) {
+      sections.mes.push(client);
+    } else {
+      sections.antigos.push(client);
+    }
   });
 
   let html = "";
@@ -117,6 +133,7 @@ function renderClients(clients) {
   renderSection("🟢 Hoje", sections.hoje);
   renderSection("🟡 Ontem", sections.ontem);
   renderSection("🔵 Esta Semana", sections.semana);
+  renderSection("🟠 Semana Passada", sections.semanaPassada);
   renderSection("🟣 Este Mês", sections.mes);
   renderSection("⚫ Antigos", sections.antigos);
 
